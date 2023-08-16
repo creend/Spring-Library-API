@@ -33,4 +33,11 @@ public class BookService {
         BookEntity bookEntity = bookMapper.fromDtoToEntity(bookDto);
         this.bookRepository.save(bookEntity);
     }
+
+    public void deleteBook(Long bookId) {
+        if(!this.bookRepository.existsById(bookId)){
+            throw  new NotFoundException(String.format("Book with id %d doesnt exist", bookId));
+        }
+        this.bookRepository.deleteById(bookId);
+    }
 }
