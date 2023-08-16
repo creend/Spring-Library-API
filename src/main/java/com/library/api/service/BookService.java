@@ -1,6 +1,7 @@
 package com.library.api.service;
 
 import com.library.api.entity.BookEntity;
+import com.library.api.exception.NotFoundException;
 import com.library.api.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,5 +18,9 @@ public class BookService {
     }
     public List<BookEntity> getAllBooks() {
         return this.bookRepository.findAll();
+    }
+
+    public BookEntity getBookById(Long bookId) {
+        return this.bookRepository.findById(bookId).orElseThrow(NotFoundException::new);
     }
 }
