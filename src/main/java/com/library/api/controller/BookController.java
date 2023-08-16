@@ -1,6 +1,7 @@
 package com.library.api.controller;
 
 import com.library.api.dto.CreateBookDto;
+import com.library.api.dto.UpdateBookDto;
 import com.library.api.entity.BookEntity;
 import com.library.api.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,15 @@ public class BookController {
             @RequestBody() CreateBookDto bookDto
     ){
         bookService.createBook(bookDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping(path = "{bookId}")
+    public ResponseEntity<Void> updateBook(
+            @RequestBody() UpdateBookDto bookDto,
+            @PathVariable("bookId") Long bookId
+    ){
+        bookService.updateBook(bookDto,bookId);
         return ResponseEntity.ok().build();
     }
 
