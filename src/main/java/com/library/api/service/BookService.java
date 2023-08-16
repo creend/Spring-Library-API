@@ -5,13 +5,16 @@ import com.library.api.dto.UpdateBookDto;
 import com.library.api.dto.mapper.BookMapper;
 import com.library.api.entity.BookEntity;
 import com.library.api.exception.NotFoundException;
+import com.library.api.model.BookFilter;
 import com.library.api.repository.BookRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Book;
 import java.util.List;
+import java.util.function.Predicate;
 
 @Service
 public class BookService {
@@ -67,5 +70,35 @@ public class BookService {
             throw  new NotFoundException(String.format("Book with id %d doesnt exist", bookId));
         }
         this.bookRepository.deleteById(bookId);
+    }
+
+    public List<BookEntity> searchBooks(BookFilter bookFilter) {
+        Predicate<BookEntity> conditions = e -> true;
+        if(bookFilter.getTitle() != null){
+            conditions = conditions.and(book -> book.getTitle().toLowerCase().contains(bookFilter.getTitle().toLowerCase()));
+        }
+        if(bookFilter.getAuthor() != null){
+            conditions = conditions.and(book -> book.getAuthor().toLowerCase().contains(bookFilter.getAuthor().toLowerCase()));
+        }
+        if(bookFilter.getGenre() != null){
+            conditions = conditions.and(book -> book.getGenre().equalsIgnoreCase(bookFilter.getGenre()));
+        }
+        if(bookFilter.getPublisher() != null){
+            conditions = conditions.and(book -> book.getPublisher().equalsIgnoreCase(bookFilter.getPublisher()));
+        }
+        if(bookFilter.getMinAvailableCopies() != null){
+            conditions = conditions.and(book -> book.getAvailableCopies() >= bookFilter.getMinAvailableCopies());
+        }
+        if(bookFilter.getMinPrice() != null){
+            conditions = conditions.and(book -> book.getPrice() >= bookFilter.getMinPrice());
+        }
+        if(bookFilter.getMaxPrice() != null){
+            conditions = conditions.and(book -> book.getPrice() <= bookFilter.getMaxPrice());
+        }
+        List<BookEntity> books = this.bookRepository.findAll().stream().filter(conditions).toList();
+        if(books.isEmpty()){
+            throw new NotFoundException("Not found Books with given criterias");
+        }
+        return books;
     }
 }

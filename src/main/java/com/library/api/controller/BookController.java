@@ -4,6 +4,7 @@ import com.library.api.dto.CreateBookDto;
 import com.library.api.dto.UpdateBookDto;
 import com.library.api.entity.BookEntity;
 import com.library.api.exception.BadRequestException;
+import com.library.api.model.BookFilter;
 import com.library.api.service.BookService;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -31,6 +33,20 @@ public class BookController {
     @GetMapping
     public ResponseEntity<List<BookEntity>> getAllBooks(){
         return ResponseEntity.ok(bookService.getAllBooks());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<BookEntity>> searchBooks(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String author,
+            @RequestParam(required = false) String genre,
+            @RequestParam(required = false) String publisher,
+            @RequestParam(required = false) Integer minAvailableCopies,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice
+    ){
+        BookFilter bookFilter = new BookFilter(title,author,genre,publisher,minAvailableCopies,minPrice,maxPrice);
+        return ResponseEntity.ok(bookService.searchBooks(bookFilter));
     }
 
     @GetMapping(path = "{bookId}")
