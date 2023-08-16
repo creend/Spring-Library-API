@@ -3,16 +3,23 @@ package com.library.api.controller;
 import com.library.api.dto.CreateBookDto;
 import com.library.api.dto.UpdateBookDto;
 import com.library.api.entity.BookEntity;
+import com.library.api.exception.BadRequestException;
 import com.library.api.service.BookService;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/book")
+@Validated
 public class BookController {
 
     private final BookService bookService;
@@ -28,14 +35,14 @@ public class BookController {
 
     @GetMapping(path = "{bookId}")
     public ResponseEntity<BookEntity> getBookById(
-            @PathVariable("bookId") Long bookId
+            @Min(1) @PathVariable("bookId") Long bookId
     ){
         return ResponseEntity.ok(bookService.getBookById(bookId));
     }
 
     @PostMapping
     public ResponseEntity<Void> createBook(
-            @RequestBody() CreateBookDto bookDto
+            @Valid @RequestBody() CreateBookDto bookDto
     ){
         bookService.createBook(bookDto);
         return ResponseEntity.ok().build();
@@ -43,8 +50,8 @@ public class BookController {
 
     @PatchMapping(path = "{bookId}")
     public ResponseEntity<Void> updateBook(
-            @RequestBody() UpdateBookDto bookDto,
-            @PathVariable("bookId") Long bookId
+            @Valid @RequestBody() UpdateBookDto bookDto,
+            @Min(1) @PathVariable("bookId") Long bookId
     ){
         bookService.updateBook(bookDto,bookId);
         return ResponseEntity.ok().build();
@@ -52,9 +59,16 @@ public class BookController {
 
     @DeleteMapping(path = "{bookId}")
     public ResponseEntity<Void> deleteBook(
-            @PathVariable("bookId") Long bookId
+            @Min(1) @PathVariable("bookId") Long bookId
     ){
         bookService.deleteBook(bookId);
         return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    BadRequestException handleConstraintViolationException(ConstraintViolationException e) {
+        String message = "not valid due to validation error: " + e.getMessage();
+        return new BadRequestException(message);
     }
 }
