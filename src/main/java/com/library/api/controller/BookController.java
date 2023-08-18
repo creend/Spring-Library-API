@@ -4,12 +4,14 @@ import com.library.api.dto.CreateBookDto;
 import com.library.api.dto.UpdateBookDto;
 import com.library.api.entity.BookEntity;
 import com.library.api.exception.BadRequestException;
+import com.library.api.model.BookFields;
 import com.library.api.model.BookFilter;
 import com.library.api.service.BookService;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -42,9 +44,12 @@ public class BookController {
             @RequestParam(required = false) String publisher,
             @RequestParam(required = false) Integer minAvailableCopies,
             @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(defaultValue = "ASC") Sort.Direction sortDirection,
+            @RequestParam(defaultValue = "id") String sortBy
+
     ){
-        BookFilter bookFilter = new BookFilter(title,author,genreId,publisher,minAvailableCopies,minPrice,maxPrice);
+        BookFilter bookFilter = new BookFilter(title,author,genreId,publisher,minAvailableCopies,minPrice,maxPrice, sortDirection,sortBy);
         return ResponseEntity.ok(bookService.searchBooks(bookFilter));
     }
 

@@ -11,6 +11,7 @@ import com.library.api.repository.BookRepository;
 import com.library.api.repository.GenreRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -99,7 +100,7 @@ public class BookService {
         if(bookFilter.getMaxPrice() != null){
             conditions = conditions.and(book -> book.getPrice() <= bookFilter.getMaxPrice());
         }
-        List<BookEntity> books = this.bookRepository.findAll().stream().filter(conditions).toList();
+        List<BookEntity> books = this.bookRepository.findAll(Sort.by(bookFilter.getSortDirection(), bookFilter.getSortBy())).stream().filter(conditions).toList();
         if(books.isEmpty()){
             throw new NotFoundException("Not found Books with given criterias");
         }
