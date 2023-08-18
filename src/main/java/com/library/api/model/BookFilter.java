@@ -10,17 +10,17 @@ import java.time.LocalDate;
 public class BookFilter {
     private String title;
     private String author;
-    private String genre;
+    private Long genreId;
     private String publisher;
 
     private Integer minAvailableCopies;
     private Double minPrice;
     private Double maxPrice;
 
-    public BookFilter(String title, String author, String genre, String publisher, Integer minAvailableCopies, Double minPrice, Double maxPrice) {
+    public BookFilter(String title, String author, Long genreId, String publisher, Integer minAvailableCopies, Double minPrice, Double maxPrice) {
         this.title = title;
         this.author = author;
-        this.genre = genre;
+        this.genreId = genreId;
         this.publisher = publisher;
         this.minAvailableCopies = minAvailableCopies;
         this.minPrice = minPrice;

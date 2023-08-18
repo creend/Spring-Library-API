@@ -10,7 +10,6 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -39,13 +38,13 @@ public class BookController {
     public ResponseEntity<List<BookEntity>> searchBooks(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String author,
-            @RequestParam(required = false) String genre,
+            @RequestParam(required = false) Long genreId,
             @RequestParam(required = false) String publisher,
             @RequestParam(required = false) Integer minAvailableCopies,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice
     ){
-        BookFilter bookFilter = new BookFilter(title,author,genre,publisher,minAvailableCopies,minPrice,maxPrice);
+        BookFilter bookFilter = new BookFilter(title,author,genreId,publisher,minAvailableCopies,minPrice,maxPrice);
         return ResponseEntity.ok(bookService.searchBooks(bookFilter));
     }
 

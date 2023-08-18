@@ -25,14 +25,18 @@ public class BookEntity {
 
     private String title;
     private String author;
-    private String genre;
+
+    @ManyToOne()
+    @JoinColumn(name="genreId",referencedColumnName = "id")
+    private GenreEntity genre;
+
     private String publisher;
     private LocalDate releaseDate;
 
     private Integer availableCopies;
     private Double price;
 
-    public BookEntity(Long id, String title, String author, String genre, String publisher, LocalDate releaseDate, Integer availableCopies, Double price) {
+    public BookEntity(Long id, String title, String author, GenreEntity genre, String publisher, LocalDate releaseDate, Integer availableCopies, Double price) {
         this.id = id;
         this.title = title;
         this.author = author;
@@ -43,7 +47,7 @@ public class BookEntity {
         this.price = price;
     }
 
-    public BookEntity(String title, String author,String genre, String publisher, LocalDate releaseDate, Integer availableCopies, Double price) {
+    public BookEntity(String title, String author,GenreEntity genre, String publisher, LocalDate releaseDate, Integer availableCopies, Double price) {
         this.title = title;
         this.author = author;
         this.genre = genre;

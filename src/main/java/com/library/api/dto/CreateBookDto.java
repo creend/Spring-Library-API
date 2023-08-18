@@ -1,6 +1,7 @@
 package com.library.api.dto;
 
 
+import com.library.api.entity.GenreEntity;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -17,7 +18,7 @@ public class CreateBookDto {
     @NotNull
     private String author;
     @NotNull
-    private String genre;
+    private Long genreId;
     @NotNull
     private String publisher;
     @NotNull
