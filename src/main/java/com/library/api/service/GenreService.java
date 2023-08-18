@@ -1,13 +1,19 @@
 package com.library.api.service;
 
 import com.library.api.dto.CreateGenreDto;
+import com.library.api.dto.UpdateGenreDto;
 import com.library.api.entity.GenreEntity;
 import com.library.api.exception.BadRequestException;
 import com.library.api.exception.NotFoundException;
 import com.library.api.repository.BookRepository;
 import com.library.api.repository.GenreRepository;
+import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 
@@ -47,4 +53,14 @@ public class GenreService {
         }
         genreRepository.deleteById(genreId);
     }
+
+    @Transactional()
+    public void updateGenre(Long genreId, UpdateGenreDto updateGenreDto) {
+        GenreEntity genre = genreRepository.findById(genreId).orElseThrow(()-> new NotFoundException(String.format("Genre with id %d not found",genreId)));
+        if (updateGenreDto.getName()!=null){
+            genre.setName(updateGenreDto.getName());
+        }
+    }
+
+
 }
