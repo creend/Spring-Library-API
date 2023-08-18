@@ -24,4 +24,8 @@ public class GenreService {
     public GenreEntity getGenreById(Long genreId) {
         return this.genreRepository.findById(genreId).orElseThrow(()-> new NotFoundException(String.format("Genre with id %d not found",genreId)));
     }
+
+    public List<GenreEntity> searchGenres(String name) {
+        return this.genreRepository.searchGenreEntities(name);
+    }
 }
