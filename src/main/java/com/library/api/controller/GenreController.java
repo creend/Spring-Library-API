@@ -1,5 +1,6 @@
 package com.library.api.controller;
 
+import com.library.api.dto.CreateGenreDto;
 import com.library.api.entity.GenreEntity;
 import com.library.api.service.GenreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,14 @@ public class GenreController {
             @PathVariable("genreId") Long genreId
     ){
         return ResponseEntity.ok(genreService.getGenreById(genreId));
+    }
+
+    @PostMapping()
+    public ResponseEntity<Void> createGenre(
+            @RequestBody()CreateGenreDto genreDto
+            ){
+        this.genreService.createGenre(genreDto);
+        return ResponseEntity.ok().build();
     }
 
 }

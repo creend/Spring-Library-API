@@ -1,5 +1,6 @@
 package com.library.api.service;
 
+import com.library.api.dto.CreateGenreDto;
 import com.library.api.entity.GenreEntity;
 import com.library.api.exception.NotFoundException;
 import com.library.api.repository.GenreRepository;
@@ -27,5 +28,10 @@ public class GenreService {
 
     public List<GenreEntity> searchGenres(String name) {
         return this.genreRepository.searchGenreEntities(name);
+    }
+
+    public void createGenre(CreateGenreDto genreDto) {
+        GenreEntity genre = new GenreEntity(genreDto.getName());
+        genreRepository.save(genre);
     }
 }
