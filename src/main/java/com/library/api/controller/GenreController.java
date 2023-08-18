@@ -46,4 +46,12 @@ public class GenreController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping(path = "{genreId}")
+    public ResponseEntity<Void> deleteGenre(
+            @PathVariable("genreId") Long genreId
+    ){
+        this.genreService.deleteGenre(genreId);
+        return ResponseEntity.ok().build();
+    }
+
 }
