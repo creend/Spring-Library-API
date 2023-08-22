@@ -68,11 +68,4 @@ public class GenreController {
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    BadRequestException handleConstraintViolationException(ConstraintViolationException e) {
-        String message = "not valid due to validation error: " + e.getMessage();
-        return new BadRequestException(message);
-    }
-
 }

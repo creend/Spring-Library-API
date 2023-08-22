@@ -1,13 +1,12 @@
 package com.library.api.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
-public class BadRequestException extends ResponseStatusException {
-    public BadRequestException(String message){
-        super(HttpStatus.BAD_REQUEST, message);
+public class BadRequestException extends AbstractApiException {
+    public BadRequestException(String description){
+        super("Bad request", description, HttpStatus.BAD_REQUEST);
     }
     public BadRequestException(){
-        super(HttpStatus.BAD_REQUEST, "Bad request");
+        super("Bad request", null, HttpStatus.BAD_REQUEST);
     }
 }
