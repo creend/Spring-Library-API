@@ -3,6 +3,7 @@ package com.library.api.service;
 import com.library.api.dto.CreateBookDto;
 import com.library.api.dto.UpdateBookDto;
 import com.library.api.dto.mapper.CreateBookDtoMapper;
+import com.library.api.dto.validation.DtoValidator;
 import com.library.api.entity.BookEntity;
 import com.library.api.entity.GenreEntity;
 import com.library.api.exception.NotFoundException;
@@ -38,6 +39,8 @@ public class BookService {
     }
 
     public void createBook(CreateBookDto bookDto) {
+        DtoValidator.validate(bookDto);
+
         GenreEntity genre = genreRepository.findById(bookDto.getGenreId()).orElseThrow(()-> new NotFoundException(String.format("Genre with id %s doesnt exist",bookDto.getGenreId())));
         BookEntity bookEntity = bookMapper.fromDtoToEntity(bookDto);
         this.bookRepository.save(bookEntity);
@@ -45,6 +48,8 @@ public class BookService {
 
     @Transactional
     public void updateBook(UpdateBookDto bookDto, Long bookId) {
+        DtoValidator.validate(bookDto);
+
         BookEntity bookEntity = this.bookRepository.findById(bookId).orElseThrow(NotFoundException::new);
         if(bookDto.getTitle() != null){
             bookEntity.setTitle(bookDto.getTitle());

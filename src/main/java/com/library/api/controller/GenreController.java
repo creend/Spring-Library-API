@@ -45,7 +45,7 @@ public class GenreController {
 
     @PostMapping()
     public ResponseEntity<Void> createGenre(
-            @Valid @RequestBody()CreateGenreDto genreDto
+            @RequestBody() CreateGenreDto genreDto
             ){
         this.genreService.createGenre(genreDto);
         return ResponseEntity.ok().build();
@@ -62,7 +62,7 @@ public class GenreController {
     @PatchMapping(path = "{genreId}")
     public ResponseEntity<Void> updateGenre(
             @PathVariable("genreId") Long genreId,
-            @Valid @RequestBody() UpdateGenreDto updateGenreDto
+             @RequestBody() UpdateGenreDto updateGenreDto
     ){
         this.genreService.updateGenre(genreId, updateGenreDto);
         return ResponseEntity.ok().build();

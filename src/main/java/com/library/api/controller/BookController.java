@@ -62,7 +62,7 @@ public class BookController {
 
     @PostMapping
     public ResponseEntity<Void> createBook(
-            @Valid @RequestBody() CreateBookDto bookDto
+            @RequestBody() CreateBookDto bookDto
     ){
         bookService.createBook(bookDto);
         return ResponseEntity.ok().build();
@@ -70,7 +70,7 @@ public class BookController {
 
     @PatchMapping(path = "{bookId}")
     public ResponseEntity<Void> updateBook(
-            @Valid @RequestBody() UpdateBookDto bookDto,
+            @RequestBody() UpdateBookDto bookDto,
             @Min(1) @PathVariable("bookId") Long bookId
     ){
         bookService.updateBook(bookDto,bookId);

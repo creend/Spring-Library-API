@@ -2,6 +2,7 @@ package com.library.api.service;
 
 import com.library.api.dto.CreateGenreDto;
 import com.library.api.dto.UpdateGenreDto;
+import com.library.api.dto.validation.DtoValidator;
 import com.library.api.entity.GenreEntity;
 import com.library.api.exception.BadRequestException;
 import com.library.api.exception.NotFoundException;
@@ -41,6 +42,7 @@ public class GenreService {
     }
 
     public void createGenre(CreateGenreDto genreDto) {
+        DtoValidator.validate(genreDto);
         GenreEntity genre = new GenreEntity(genreDto.getName());
         genreRepository.save(genre);
     }
@@ -56,6 +58,8 @@ public class GenreService {
 
     @Transactional()
     public void updateGenre(Long genreId, UpdateGenreDto updateGenreDto) {
+        DtoValidator.validate(updateGenreDto);
+
         GenreEntity genre = genreRepository.findById(genreId).orElseThrow(()-> new NotFoundException(String.format("Genre with id %d not found",genreId)));
         if (updateGenreDto.getName()!=null){
             genre.setName(updateGenreDto.getName());
