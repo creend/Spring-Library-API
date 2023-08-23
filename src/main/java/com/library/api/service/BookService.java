@@ -1,8 +1,10 @@
 package com.library.api.service;
 
+import com.library.api.dto.BookDto;
+import com.library.api.dto.BookResponseDto;
 import com.library.api.dto.CreateBookDto;
 import com.library.api.dto.UpdateBookDto;
-import com.library.api.dto.mapper.CreateBookDtoMapper;
+import com.library.api.dto.mapper.BookDtoMapper;
 import com.library.api.dto.validation.DtoValidator;
 import com.library.api.entity.BookEntity;
 import com.library.api.entity.GenreEntity;
@@ -12,9 +14,13 @@ import com.library.api.repository.BookRepository;
 import com.library.api.repository.GenreRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -22,20 +28,27 @@ import java.util.function.Predicate;
 public class BookService {
     private final BookRepository bookRepository;
     private final GenreRepository genreRepository;
-    private final CreateBookDtoMapper bookMapper;
+    private final BookDtoMapper bookMapper;
 
     @Autowired
-    public BookService(BookRepository bookRepository, CreateBookDtoMapper bookMapper, GenreRepository genreRepository) {
+    public BookService(BookRepository bookRepository, BookDtoMapper bookMapper, GenreRepository genreRepository) {
         this.bookRepository = bookRepository;
         this.bookMapper = bookMapper;
         this.genreRepository = genreRepository;
     }
-    public List<BookEntity> getAllBooks() {
-        return this.bookRepository.findAll();
+    public BookResponseDto getAllBooks(int page, int size) {
+        List<BookEntity> books = new ArrayList<>();
+        Pageable paging = PageRequest.of(page, size);
+        Page<BookEntity> pageBooks = this.bookRepository.findAll(paging);
+        books = pageBooks.getContent();
+
+        List<BookDto> mappedBooks = books.stream().map(bookMapper::fromEntityToDto).toList();
+
+        return BookResponseDto.builder().totalPages(pageBooks.getTotalPages()).currentPage(page).books(mappedBooks).totalElements(pageBooks.getTotalElements()).build();
     }
 
-    public BookEntity getBookById(Long bookId) {
-        return this.bookRepository.findById(bookId).orElseThrow(NotFoundException::new);
+    public BookDto getBookById(Long bookId) {
+        return bookMapper.fromEntityToDto(this.bookRepository.findById(bookId).orElseThrow(NotFoundException::new));
     }
 
     public void createBook(CreateBookDto bookDto) {
@@ -82,7 +95,7 @@ public class BookService {
         this.bookRepository.deleteById(bookId);
     }
 
-    public List<BookEntity> searchBooks(BookFilter bookFilter) {
+    public List<BookDto> searchBooks(BookFilter bookFilter,int page,int size) {
         Predicate<BookEntity> conditions = e -> true;
         if(bookFilter.getTitle() != null){
             conditions = conditions.and(book -> book.getTitle().toLowerCase().contains(bookFilter.getTitle().toLowerCase()));
@@ -105,7 +118,7 @@ public class BookService {
         if(bookFilter.getMaxPrice() != null){
             conditions = conditions.and(book -> book.getPrice() <= bookFilter.getMaxPrice());
         }
-        List<BookEntity> books = this.bookRepository.findAll(Sort.by(bookFilter.getSortDirection(), bookFilter.getSortBy())).stream().filter(conditions).toList();
+        List<BookDto> books = this.bookRepository.findAll(Sort.by(bookFilter.getSortDirection(), bookFilter.getSortBy())).stream().filter(conditions).map(bookMapper::fromEntityToDto).toList();
         if(books.isEmpty()){
             throw new NotFoundException("Not found Books with given criterias");
         }

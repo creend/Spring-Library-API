@@ -1,5 +1,7 @@
 package com.library.api.controller;
 
+import com.library.api.dto.BookDto;
+import com.library.api.dto.BookResponseDto;
 import com.library.api.dto.CreateBookDto;
 import com.library.api.dto.UpdateBookDto;
 import com.library.api.entity.BookEntity;
@@ -11,6 +13,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,12 +35,15 @@ public class BookController {
         this.bookService = bookService;
     }
     @GetMapping
-    public ResponseEntity<List<BookEntity>> getAllBooks(){
-        return ResponseEntity.ok(bookService.getAllBooks());
+    public ResponseEntity<BookResponseDto> getAllBooks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size
+    ){
+        return ResponseEntity.ok(bookService.getAllBooks(page,size));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<BookEntity>> searchBooks(
+    public ResponseEntity<List<BookDto>> searchBooks(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String author,
             @RequestParam(required = false) Long genreId,
@@ -46,15 +52,17 @@ public class BookController {
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(defaultValue = "ASC") Sort.Direction sortDirection,
-            @RequestParam(defaultValue = "id") String sortBy
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size
 
     ){
         BookFilter bookFilter = new BookFilter(title,author,genreId,publisher,minAvailableCopies,minPrice,maxPrice, sortDirection,sortBy);
-        return ResponseEntity.ok(bookService.searchBooks(bookFilter));
+        return ResponseEntity.ok(bookService.searchBooks(bookFilter,page,size));
     }
 
     @GetMapping(path = "{bookId}")
-    public ResponseEntity<BookEntity> getBookById(
+    public ResponseEntity<BookDto> getBookById(
             @Min(1) @PathVariable("bookId") Long bookId
     ){
         return ResponseEntity.ok(bookService.getBookById(bookId));
