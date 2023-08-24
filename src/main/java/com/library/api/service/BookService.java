@@ -95,33 +95,12 @@ public class BookService {
         this.bookRepository.deleteById(bookId);
     }
 
-    public List<BookDto> searchBooks(BookFilter bookFilter,int page,int size) {
-        Predicate<BookEntity> conditions = e -> true;
-        if(bookFilter.getTitle() != null){
-            conditions = conditions.and(book -> book.getTitle().toLowerCase().contains(bookFilter.getTitle().toLowerCase()));
-        }
-        if(bookFilter.getAuthor() != null){
-            conditions = conditions.and(book -> book.getAuthor().toLowerCase().contains(bookFilter.getAuthor().toLowerCase()));
-        }
-        if(bookFilter.getGenreId() != null){
-            conditions = conditions.and(book -> book.getGenre().getId().equals(bookFilter.getGenreId()));
-        }
-        if(bookFilter.getPublisher() != null){
-            conditions = conditions.and(book -> book.getPublisher().equalsIgnoreCase(bookFilter.getPublisher()));
-        }
-        if(bookFilter.getMinAvailableCopies() != null){
-            conditions = conditions.and(book -> book.getAvailableCopies() >= bookFilter.getMinAvailableCopies());
-        }
-        if(bookFilter.getMinPrice() != null){
-            conditions = conditions.and(book -> book.getPrice() >= bookFilter.getMinPrice());
-        }
-        if(bookFilter.getMaxPrice() != null){
-            conditions = conditions.and(book -> book.getPrice() <= bookFilter.getMaxPrice());
-        }
-        List<BookDto> books = this.bookRepository.findAll(Sort.by(bookFilter.getSortDirection(), bookFilter.getSortBy())).stream().filter(conditions).map(bookMapper::fromEntityToDto).toList();
-        if(books.isEmpty()){
-            throw new NotFoundException("Not found Books with given criterias");
-        }
-        return books;
+    public BookResponseDto searchBooks(BookFilter bookFilter,int page,int size) {
+        Pageable paging = PageRequest.of(page, size);
+        Page<BookEntity> pageBooks = this.bookRepository.searchBookEntitiesByFilters(bookFilter,paging);
+        List<BookEntity> books = pageBooks.getContent();
+        List<BookDto> mappedBooks = books.stream().map(bookMapper::fromEntityToDto).toList();
+
+        return BookResponseDto.builder().totalPages(pageBooks.getTotalPages()).currentPage(page).books(mappedBooks).totalElements(pageBooks.getTotalElements()).build();
     }
 }

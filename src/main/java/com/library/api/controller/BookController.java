@@ -43,7 +43,7 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<BookDto>> searchBooks(
+    public ResponseEntity<BookResponseDto> searchBooks(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String author,
             @RequestParam(required = false) Long genreId,
