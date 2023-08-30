@@ -1,20 +1,19 @@
 package com.library.api.service;
 
 import com.library.api.dto.CreateGenreDto;
+import com.library.api.dto.GenreDto;
 import com.library.api.dto.UpdateGenreDto;
+import com.library.api.dto.mapper.GenreDtoMapper;
 import com.library.api.dto.validation.DtoValidator;
+import com.library.api.entity.BookEntity;
 import com.library.api.entity.GenreEntity;
 import com.library.api.exception.BadRequestException;
 import com.library.api.exception.NotFoundException;
 import com.library.api.repository.BookRepository;
 import com.library.api.repository.GenreRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 
@@ -22,19 +21,24 @@ import java.util.List;
 public class GenreService {
     private final GenreRepository genreRepository;
     private final BookRepository bookRepository;
+    private final GenreDtoMapper genreMapper;
 
     @Autowired
-    public GenreService(GenreRepository genreRepository, BookRepository bookRepository) {
+    public GenreService(GenreRepository genreRepository, BookRepository bookRepository, GenreDtoMapper genreMapper) {
         this.genreRepository = genreRepository;
         this.bookRepository = bookRepository;
+        this.genreMapper = genreMapper;
     }
 
     public List<GenreEntity> getAllGenres(){
         return this.genreRepository.findAll();
     }
 
-    public GenreEntity getGenreById(Long genreId) {
-        return this.genreRepository.findById(genreId).orElseThrow(()-> new NotFoundException(String.format("Genre with id %d not found",genreId)));
+    public GenreDto getGenreById(Long genreId) {
+        if(!this.genreRepository.existsById(genreId)){
+            throw new NotFoundException(String.format("Genre with id %d not found",genreId));
+        }
+        return genreMapper.fromEntityToDto(this.genreRepository.findById(genreId).orElseThrow());
     }
 
     public List<GenreEntity> searchGenres(String name) {
@@ -56,9 +60,19 @@ public class GenreService {
         genreRepository.deleteById(genreId);
     }
 
+    @Transactional
+    public void deleteGenreAndBreak(Long genreId) {
+        GenreEntity genre = genreRepository.findById(genreId).orElseThrow(()-> new NotFoundException(String.format("Genre with id %d not found",genreId)));
+        List<BookEntity> booksWithGivenGenre = genre.getBooks();
+        for(BookEntity book:booksWithGivenGenre){
+            book.setGenre(null);
+        }
+        genreRepository.deleteById(genreId);
+    }
+
     @Transactional()
     public void updateGenre(Long genreId, UpdateGenreDto updateGenreDto) {
-        DtoValidator.validate(updateGenreDto);
+//        DtoValidator.validate(updateGenreDto);
 
         GenreEntity genre = genreRepository.findById(genreId).orElseThrow(()-> new NotFoundException(String.format("Genre with id %d not found",genreId)));
         if (updateGenreDto.getName()!=null){

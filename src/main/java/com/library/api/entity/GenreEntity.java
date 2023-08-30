@@ -1,10 +1,13 @@
 package com.library.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -25,6 +28,10 @@ public class GenreEntity {
     private Long id;
     @NotNull
     private String name;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "genre",fetch = FetchType.LAZY)
+    private List<BookEntity> books;
 
 
     public GenreEntity(Long id, String name) {

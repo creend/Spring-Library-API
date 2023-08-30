@@ -1,6 +1,8 @@
 package com.library.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +12,7 @@ import java.time.LocalDate;
 @Setter()
 @Entity
 @Table
+@Builder
 public class BookEntity {
     @Id
     @SequenceGenerator(
@@ -26,7 +29,8 @@ public class BookEntity {
     private String title;
     private String author;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     @JoinColumn(name="genreId",referencedColumnName = "id")
     private GenreEntity genre;
 

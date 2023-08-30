@@ -1,6 +1,7 @@
 package com.library.api.controller;
 
 import com.library.api.dto.CreateGenreDto;
+import com.library.api.dto.GenreDto;
 import com.library.api.dto.UpdateGenreDto;
 import com.library.api.entity.GenreEntity;
 import com.library.api.exception.BadRequestException;
@@ -37,7 +38,7 @@ public class GenreController {
     }
 
     @GetMapping(path = "{genreId}")
-    public ResponseEntity<GenreEntity> getGenreById(
+    public ResponseEntity<GenreDto> getGenreById(
             @PathVariable("genreId") Long genreId
     ){
         return ResponseEntity.ok(genreService.getGenreById(genreId));
@@ -55,14 +56,14 @@ public class GenreController {
     public ResponseEntity<Void> deleteGenre(
             @PathVariable("genreId") Long genreId
     ){
-        this.genreService.deleteGenre(genreId);
+        this.genreService.deleteGenreAndBreak(genreId);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping(path = "{genreId}")
     public ResponseEntity<Void> updateGenre(
             @PathVariable("genreId") Long genreId,
-             @RequestBody() UpdateGenreDto updateGenreDto
+            @RequestBody() UpdateGenreDto updateGenreDto
     ){
         this.genreService.updateGenre(genreId, updateGenreDto);
         return ResponseEntity.ok().build();

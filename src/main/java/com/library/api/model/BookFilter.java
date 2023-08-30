@@ -1,5 +1,6 @@
 package com.library.api.model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Sort;
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
+@Builder
 public class BookFilter {
     private String title;
     private String author;

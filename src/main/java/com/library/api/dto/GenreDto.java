@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UpdateGenreDto extends CreateGenreDto{
-//    @NotNull
+public class GenreDto {
+    private Long id;
     private String name;
 }
