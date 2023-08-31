@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -26,6 +27,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import javax.swing.text.html.parser.Entity;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
@@ -62,13 +64,14 @@ public class BookServiceTests {
         GenreEntity adventure = new GenreEntity("Adventure");
 
         CreateBookDto bookDto = Mockito.mock(CreateBookDto.class);
+        BookEntity bookEntity = Mockito.mock(BookEntity.class);
 
         try (MockedStatic<DtoValidator> mocked = Mockito.mockStatic(DtoValidator.class)) {
-            mocked.when(()->DtoValidator.validate(bookDto)).thenAnswer(invocationOnMock -> {
-                return null;
-            });
             Mockito.when(genreRepository.findById(Mockito.any(long.class))).thenReturn(Optional.of(adventure));
             assertAll(()->bookService.createBook(bookDto));
+            mocked.verify(()->DtoValidator.validate(bookDto));
+            ArgumentCaptor<BookEntity> bookEntityArgumentCaptor = ArgumentCaptor.forClass(BookEntity.class);
+            Mockito.verify(bookRepository).save(bookEntityArgumentCaptor.capture());
         }
 
     }
