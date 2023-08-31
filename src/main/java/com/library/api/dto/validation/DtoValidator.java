@@ -24,4 +24,7 @@ public class DtoValidator {
             throw new BadRequestException(errors);
         }
     }
+
+    public static void validate() {
+    }
 }
